@@ -1,0 +1,57 @@
+{
+  "id": "email_notification_1758946579000",
+  "name": "邮件通知工作流",
+  "description": "当接收到Webhook请求时，发送邮件通知",
+  "category": "notification",
+  "tags": ["email", "webhook", "notification"],
+  "workflow": {
+    "name": "邮件通知工作流",
+    "nodes": [
+      {
+        "id": "webhook-start",
+        "name": "Webhook触发器",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [240, 300],
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "notification",
+          "responseMode": "onReceived"
+        }
+      },
+      {
+        "id": "email-send",
+        "name": "发送邮件",
+        "type": "n8n-nodes-base.emailSend",
+        "typeVersion": 1,
+        "position": [460, 300],
+        "parameters": {
+          "fromEmail": "noreply@example.com",
+          "toEmail": "admin@example.com",
+          "subject": "新的通知",
+          "text": "收到新的Webhook请求：{{ $json.message }}"
+        }
+      }
+    ],
+    "connections": {
+      "webhook-start": {
+        "main": [
+          [
+            {
+              "node": "email-send",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "active": false,
+    "settings": {},
+    "staticData": {}
+  },
+  "createdAt": "2024-01-01T00:00:00.000Z",
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "usageCount": 0,
+  "author": "System"
+}

@@ -1,0 +1,245 @@
+{
+  "nodeTypes": {
+    "triggers": {
+      "n8n-nodes-base.start": {
+        "displayName": "Start",
+        "description": "开始节点，手动触发工作流",
+        "parameters": {}
+      },
+      "n8n-nodes-base.webhook": {
+        "displayName": "Webhook",
+        "description": "接收HTTP请求触发工作流",
+        "parameters": {
+          "httpMethod": ["GET", "POST", "PUT", "DELETE"],
+          "path": "string",
+          "responseMode": ["onReceived", "lastNode"]
+        }
+      },
+      "n8n-nodes-base.cron": {
+        "displayName": "Cron",
+        "description": "定时触发工作流",
+        "parameters": {
+          "triggerTimes": {
+            "item": [
+              {
+                "mode": "everyMinute",
+                "hour": "number",
+                "minute": "number"
+              }
+            ]
+          }
+        }
+      },
+      "n8n-nodes-base.emailTrigger": {
+        "displayName": "Email Trigger",
+        "description": "监听邮件触发工作流",
+        "parameters": {
+          "mailbox": "INBOX",
+          "format": "simple"
+        }
+      }
+    },
+    "actions": {
+      "n8n-nodes-base.httpRequest": {
+        "displayName": "HTTP Request",
+        "description": "发送HTTP请求",
+        "parameters": {
+          "method": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+          "url": "string",
+          "headers": "object",
+          "body": "string",
+          "responseFormat": ["json", "text"]
+        }
+      },
+      "n8n-nodes-base.emailSend": {
+        "displayName": "Send Email",
+        "description": "发送邮件",
+        "parameters": {
+          "fromEmail": "string",
+          "toEmail": "string",
+          "subject": "string",
+          "text": "string",
+          "html": "string"
+        }
+      },
+      "n8n-nodes-base.slack": {
+        "displayName": "Slack",
+        "description": "Slack集成",
+        "parameters": {
+          "operation": ["postMessage", "update"],
+          "channel": "string",
+          "text": "string",
+          "username": "string"
+        }
+      },
+      "n8n-nodes-base.function": {
+        "displayName": "Function",
+        "description": "执行JavaScript代码",
+        "parameters": {
+          "functionCode": "string"
+        }
+      },
+      "n8n-nodes-base.set": {
+        "displayName": "Set",
+        "description": "设置数据值",
+        "parameters": {
+          "values": {
+            "string": [
+              {
+                "name": "string",
+                "value": "string"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "logic": {
+      "n8n-nodes-base.if": {
+        "displayName": "IF",
+        "description": "条件判断",
+        "parameters": {
+          "conditions": {
+            "string": [
+              {
+                "value1": "string",
+                "operation": ["equal", "notEqual", "larger", "smaller", "contains"],
+                "value2": "string"
+              }
+            ]
+          }
+        }
+      },
+      "n8n-nodes-base.switch": {
+        "displayName": "Switch",
+        "description": "多条件分支",
+        "parameters": {
+          "dataType": ["number", "string", "boolean"],
+          "value1": "string",
+          "rules": {
+            "rules": [
+              {
+                "operation": "equal",
+                "value2": "string",
+                "output": 0
+              }
+            ]
+          }
+        }
+      },
+      "n8n-nodes-base.merge": {
+        "displayName": "Merge",
+        "description": "合并数据",
+        "parameters": {
+          "mode": ["append", "pass", "wait"]
+        }
+      }
+    },
+    "databases": {
+      "n8n-nodes-base.mysql": {
+        "displayName": "MySQL",
+        "description": "MySQL数据库操作",
+        "parameters": {
+          "operation": ["select", "insert", "update", "delete"],
+          "query": "string"
+        }
+      },
+      "n8n-nodes-base.postgres": {
+        "displayName": "Postgres",
+        "description": "PostgreSQL数据库操作",
+        "parameters": {
+          "operation": ["select", "insert", "update", "delete"],
+          "query": "string"
+        }
+      },
+      "n8n-nodes-base.redis": {
+        "displayName": "Redis",
+        "description": "Redis缓存操作",
+        "parameters": {
+          "operation": ["get", "set", "delete"],
+          "key": "string",
+          "value": "string"
+        }
+      }
+    },
+    "files": {
+      "n8n-nodes-base.readBinaryFile": {
+        "displayName": "Read Binary File",
+        "description": "读取二进制文件",
+        "parameters": {
+          "filePath": "string"
+        }
+      },
+      "n8n-nodes-base.writeBinaryFile": {
+        "displayName": "Write Binary File",
+        "description": "写入二进制文件",
+        "parameters": {
+          "fileName": "string",
+          "dataPropertyName": "data"
+        }
+      }
+    },
+    "integrations": {
+      "n8n-nodes-base.googleSheets": {
+        "displayName": "Google Sheets",
+        "description": "Google表格操作",
+        "parameters": {
+          "operation": ["append", "read", "update"],
+          "sheetId": "string",
+          "range": "string"
+        }
+      },
+      "n8n-nodes-base.discord": {
+        "displayName": "Discord",
+        "description": "Discord集成",
+        "parameters": {
+          "operation": ["sendMessage"],
+          "channelId": "string",
+          "content": "string"
+        }
+      },
+      "n8n-nodes-base.telegram": {
+        "displayName": "Telegram",
+        "description": "Telegram机器人",
+        "parameters": {
+          "operation": ["sendMessage"],
+          "chatId": "string",
+          "text": "string"
+        }
+      },
+      "n8n-nodes-base.github": {
+        "displayName": "GitHub",
+        "description": "GitHub集成",
+        "parameters": {
+          "operation": ["createIssue", "getRepository"],
+          "owner": "string",
+          "repository": "string"
+        }
+      }
+    }
+  },
+  "commonPatterns": {
+    "webhook_to_email": {
+      "description": "Webhook触发邮件通知",
+      "nodes": ["n8n-nodes-base.webhook", "n8n-nodes-base.emailSend"]
+    },
+    "cron_data_sync": {
+      "description": "定时数据同步",
+      "nodes": ["n8n-nodes-base.cron", "n8n-nodes-base.httpRequest", "n8n-nodes-base.mysql"]
+    },
+    "api_processing": {
+      "description": "API数据处理",
+      "nodes": ["n8n-nodes-base.httpRequest", "n8n-nodes-base.function", "n8n-nodes-base.set"]
+    },
+    "conditional_workflow": {
+      "description": "条件分支工作流",
+      "nodes": ["n8n-nodes-base.start", "n8n-nodes-base.if", "n8n-nodes-base.emailSend"]
+    }
+  },
+  "bestPractices": {
+    "nodeNaming": "使用描述性的节点名称，如'获取用户数据'而不是'HTTP Request'",
+    "errorHandling": "为重要节点添加错误处理分支",
+    "dataValidation": "在处理外部数据前进行验证",
+    "positioning": "节点位置应该从左到右，垂直间距200像素，水平间距220像素"
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "id": "data_processing_1758946579001",
+  "name": "数据处理工作流",
+  "description": "从API获取数据，处理后存储到数据库",
+  "category": "data",
+  "tags": ["api", "database", "processing"],
+  "workflow": {
+    "name": "数据处理工作流",
+    "nodes": [
+      {
+        "id": "cron-trigger",
+        "name": "定时触发器",
+        "type": "n8n-nodes-base.cron",
+        "typeVersion": 1,
+        "position": [240, 300],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "0 */6 * * *"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "http-request",
+        "name": "获取API数据",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 1,
+        "position": [460, 300],
+        "parameters": {
+          "url": "https://api.example.com/data",
+          "method": "GET",
+          "responseFormat": "json"
+        }
+      },
+      {
+        "id": "function-process",
+        "name": "数据处理",
+        "type": "n8n-nodes-base.function",
+        "typeVersion": 1,
+        "position": [680, 300],
+        "parameters": {
+          "functionCode": "// 处理数据\nconst processedData = items.map(item => {\n  return {\n    id: item.json.id,\n    name: item.json.name,\n    processed_at: new Date().toISOString()\n  };\n});\n\nreturn processedData.map(data => ({ json: data }));"
+        }
+      },
+      {
+        "id": "mysql-insert",
+        "name": "存储到数据库",
+        "type": "n8n-nodes-base.mysql",
+        "typeVersion": 1,
+        "position": [900, 300],
+        "parameters": {
+          "operation": "insert",
+          "table": "processed_data",
+          "columns": "id,name,processed_at",
+          "additionalFields": {}
+        }
+      }
+    ],
+    "connections": {
+      "cron-trigger": {
+        "main": [
+          [
+            {
+              "node": "http-request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "http-request": {
+        "main": [
+          [
+            {
+              "node": "function-process",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "function-process": {
+        "main": [
+          [
+            {
+              "node": "mysql-insert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "active": false,
+    "settings": {},
+    "staticData": {}
+  },
+  "createdAt": "2024-01-01T00:00:00.000Z",
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "usageCount": 0,
+  "author": "System"
+}

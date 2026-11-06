@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "outDir": "dist/server",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "@/api/*": ["api/*"],
+      "@/shared/*": ["shared/*"]
+    }
+  },
+  "include": ["api/**/*", "shared/**/*"],
+  "exclude": ["node_modules", "dist", "src"]
+}
