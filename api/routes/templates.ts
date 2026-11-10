@@ -336,7 +336,7 @@ router.delete('/:id', async (req, res) => {
     
     await ensureTemplatesDir()
     
-    const filePath = await safeWorkflowPath(TEMPLATES_DIR, `${id}.json`)
+    const filePath = await safeWorkflowPath(TEMPLATES_DIR, `${id}.json`, { preserveEntry: true })
     if (!filePath) return res.status(404).json({ success: false, error: '模板不存在', data: null })
     
     try {

@@ -72,6 +72,23 @@ test('template and workflow routes cannot access files outside their directories
     assert.deepEqual(workflowList.data.map(item => item.filename), ['valid.json'])
     assert.equal(await fs.readFile(path.join(root, 'outside.json'), 'utf8'), outside)
     assert.equal(await fs.readlink(path.join(templates, 'linked.json')), path.join(root, 'outside.json'))
+    await t.test('deleting an in-directory alias removes only the requested link', async () => {
+      const target = path.join(templates, 'target.json')
+      const alias = path.join(templates, 'alias.json')
+      const content = JSON.stringify(template)
+      await fs.writeFile(target, content)
+      for (const destination of ['target.json', target]) {
+        await fs.symlink(destination, alias)
+        const response = await fetch(`${base}/templates/alias`, { method: 'DELETE' })
+        assert.equal(response.status, 200)
+        assert.equal((await response.json()).success, true)
+        assert.equal(await fs.readFile(target, 'utf8'), content, 'alias deletion must preserve its target')
+        await assert.rejects(fs.lstat(alias), { code: 'ENOENT' })
+      }
+      const response = await fetch(`${base}/templates/target`, { method: 'DELETE' })
+      assert.equal(response.status, 200, 'regular files remain deletable')
+      await assert.rejects(fs.lstat(target), { code: 'ENOENT' })
+    })
   } finally {
     if (server) await new Promise(resolve => server.close(resolve))
     process.chdir(previousCwd)
