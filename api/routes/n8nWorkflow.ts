@@ -238,7 +238,8 @@ router.get('/list', async (_req, res) => {
 
     for (const file of files) {
       if (file.endsWith('.json')) {
-        const filePath = path.join(workflowsDir, file);
+        const filePath = await safeWorkflowPath(workflowsDir, file);
+        if (!filePath) continue;
         const stats = await fs.stat(filePath);
         
         try {
@@ -331,7 +332,8 @@ router.get('/:filename', async (req, res) => {
     const { filename } = req.params;
     const fs = await import('fs/promises');
     const path = await import('path');
-    const filePath = path.join(process.cwd(), 'data/generated_workflows', filename);
+    const filePath = await safeWorkflowPath(path.join(process.cwd(), 'data/generated_workflows'), filename);
+    if (!filePath) return res.status(404).json({ success: false, error: '工作流文件不存在' });
 
     try {
       const content = await fs.readFile(filePath, 'utf-8');

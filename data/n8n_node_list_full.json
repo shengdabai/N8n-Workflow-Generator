@@ -60772,7 +60772,7 @@
           "displayOptions": {
             "show": { "resource": ["message"], "operation": ["reply"] }
           },
-          "placeholder": "CAHNQoFsC6JMMbOBJgtjsqN0eEc+gDg2a=SQj-tWUebQeHMDgqQ@mail.gmail.com"
+          "placeholder": "message-id@example.com"
         },
         {
           "displayName": "Subject",
@@ -109357,7 +109357,7 @@
           "name": "filePath",
           "type": "string",
           "required": true,
-          "placeholder": "file:/Users/admin/Desktop/Users",
+          "placeholder": "file:/path/to/database",
           "displayOptions": {
             "show": {
               "resource": ["databases"],
@@ -201211,7 +201211,7 @@
           "displayOptions": {
             "show": { "resource": ["person"], "operation": ["enrich"] }
           },
-          "description": "Email address (e.g – mbenioff@salesforce.com)"
+          "description": "Email address (e.g – person@example.com)"
         },
         {
           "displayName": "Fist Name",
@@ -205006,7 +205006,7 @@
           "name": "email",
           "type": "string",
           "default": "",
-          "placeholder": "hello@killia.com",
+          "placeholder": "hello@example.com",
           "required": true,
           "displayOptions": {
             "show": {
@@ -206209,7 +206209,7 @@
           "name": "email_from",
           "type": "string",
           "default": "",
-          "placeholder": "mcolomer@killia.com",
+          "placeholder": "user@example.com",
           "required": true,
           "displayOptions": {
             "show": { "group": ["communication"], "tool": ["sendEmailCustom"] }
@@ -206221,7 +206221,7 @@
           "name": "email_to",
           "type": "string",
           "default": "",
-          "placeholder": "mcolomer@gmail.com",
+          "placeholder": "user@example.com",
           "required": true,
           "displayOptions": {
             "show": { "group": ["communication"], "tool": ["sendEmailCustom"] }

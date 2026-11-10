@@ -29,7 +29,16 @@
   },
   "pnpm": {
     "overrides": {
-      "firebase-admin@14.4.0>@google-cloud/storage": "-"
+      "firebase-admin@14.4.0>@google-cloud/storage": "-",
+      "openai@5.23.2>zod": "-",
+      "@grpc/grpc-js@>=1.14.0 <1.14.5": "1.14.5",
+      "body-parser@>=2.0.0 <2.4.0": "2.4.0",
+      "qs@>=6.7.0 <=6.16.0": "6.16.1",
+      "glob@>=9.0.0 <=14.0.1": "14.0.2",
+      "minimatch@>=7.0.0 <11.0.1": "11.0.1",
+      "shell-quote@>=1.8.4 <1.11.0": "1.11.0",
+      "source-map-js@>=1.0.0 <1.2.2": "1.2.2",
+      "@isaacs/nonrecursive-glob-match": "1.0.1"
     }
   },
   "dependencies": {
@@ -54,7 +63,7 @@
     "js-yaml": "^4.3.2",
     "lucide-react": "^0.544.0",
     "morgan": "^1.12.1",
-    "multer": "^2.4.0",
+    "multer": "^2.5.0",
     "openai": "^5.23.2",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
@@ -83,6 +92,6 @@
     "tsx": "^4.23.13",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.70.0",
-    "vite": "^7.3.6"
+    "vite": "7.3.7"
   }
 }

@@ -30,6 +30,9 @@ const upload = multer({
   storage,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
+    files: 1,
+    fields: 1, // description only; bound multipart memory independently of JSON limits
+    parts: 3,
   },
   fileFilter: (_req, file, cb) => {
     // 只允许图片文件

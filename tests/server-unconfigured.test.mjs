@@ -53,6 +53,8 @@ test('server starts without provider credentials and generation fails closed', {
   try {
     const health = await waitForHealth(`http://127.0.0.1:${port}/api/health`, child)
     assert.equal((await health.json()).success, true)
+    const privateQuery = await fetch(`http://127.0.0.1:${port}/api/health?token=private-query-fixture`)
+    assert.equal(privateQuery.status, 200)
 
     const generated = await fetch(`http://127.0.0.1:${port}/api/workflows/generate`, {
       method: 'POST',
@@ -64,6 +66,7 @@ test('server starts without provider credentials and generation fails closed', {
     assert.equal(body.success, false)
     assert.equal(body.code, 'AI_SERVICE_UNAVAILABLE')
     assert.equal(body.workflow, undefined)
+    assert.ok(!output.includes('private-query-fixture'), 'access logs must omit query values')
   } finally {
     if (child.exitCode === null) child.kill('SIGTERM')
     await Promise.race([
