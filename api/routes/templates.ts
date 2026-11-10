@@ -2,6 +2,7 @@ import express from 'express'
 import fs from 'fs/promises'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { safeWorkflowPath } from '../utils/safeWorkflowPath'
 import { 
   WorkflowTemplate, 
   ApiResponse 
@@ -49,7 +50,8 @@ router.get('/', async (req, res) => {
     
     for (const file of templateFiles) {
       try {
-        const filePath = path.join(TEMPLATES_DIR, file)
+        const filePath = await safeWorkflowPath(TEMPLATES_DIR, file)
+        if (!filePath) continue
         const content = await fs.readFile(filePath, 'utf-8')
         const template: WorkflowTemplate = JSON.parse(content)
         
@@ -124,7 +126,8 @@ router.get('/:id', async (req, res) => {
     
     await ensureTemplatesDir()
     
-    const filePath = path.join(TEMPLATES_DIR, `${id}.json`)
+    const filePath = await safeWorkflowPath(TEMPLATES_DIR, `${id}.json`)
+    if (!filePath) return res.status(404).json({ success: false, error: '模板不存在', data: null })
     
     try {
       const content = await fs.readFile(filePath, 'utf-8')
@@ -201,21 +204,16 @@ router.post('/', async (req, res) => {
       author: templateData.author || 'Anonymous'
     }
     
-    // 检查是否已存在同名模板
+    // 原子创建，避免检查与写入之间的竞争及符号链接覆盖。
     const filePath = path.join(TEMPLATES_DIR, `${templateId}.json`)
     try {
-      await fs.access(filePath)
-      return res.status(409).json({
-        success: false,
-        error: '同名模板已存在',
-        data: null
-      } as ApiResponse<null>)
-    } catch {
-      // 文件不存在，可以创建
+      await fs.writeFile(filePath, JSON.stringify(template, null, 2), { encoding: 'utf-8', flag: 'wx' })
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'EEXIST') {
+        return res.status(409).json({ success: false, error: '同名模板已存在', data: null } as ApiResponse<null>)
+      }
+      throw error
     }
-    
-    // 保存模板文件
-    await fs.writeFile(filePath, JSON.stringify(template, null, 2), 'utf-8')
     
     console.log('✅ 模板创建成功:', template.name)
     
@@ -263,7 +261,8 @@ router.put('/:id', async (req, res) => {
     
     await ensureTemplatesDir()
     
-    const filePath = path.join(TEMPLATES_DIR, `${id}.json`)
+    const filePath = await safeWorkflowPath(TEMPLATES_DIR, `${id}.json`)
+    if (!filePath) return res.status(404).json({ success: false, error: '模板不存在', data: null })
     
     // 读取现有模板
     let existingTemplate: WorkflowTemplate
@@ -337,7 +336,8 @@ router.delete('/:id', async (req, res) => {
     
     await ensureTemplatesDir()
     
-    const filePath = path.join(TEMPLATES_DIR, `${id}.json`)
+    const filePath = await safeWorkflowPath(TEMPLATES_DIR, `${id}.json`)
+    if (!filePath) return res.status(404).json({ success: false, error: '模板不存在', data: null })
     
     try {
       await fs.unlink(filePath)
@@ -397,7 +397,8 @@ router.post('/:id/use', async (req, res) => {
     
     await ensureTemplatesDir()
     
-    const filePath = path.join(TEMPLATES_DIR, `${id}.json`)
+    const filePath = await safeWorkflowPath(TEMPLATES_DIR, `${id}.json`)
+    if (!filePath) return res.status(404).json({ success: false, error: '模板不存在', data: null })
     
     // 读取现有模板
     let template: WorkflowTemplate
@@ -460,7 +461,8 @@ router.get('/meta/categories', async (_req, res) => {
     
     for (const file of templateFiles) {
       try {
-        const filePath = path.join(TEMPLATES_DIR, file)
+        const filePath = await safeWorkflowPath(TEMPLATES_DIR, file)
+        if (!filePath) continue
         const content = await fs.readFile(filePath, 'utf-8')
         const template: WorkflowTemplate = JSON.parse(content)
         
