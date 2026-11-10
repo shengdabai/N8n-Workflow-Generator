@@ -2,6 +2,13 @@ import { Request, Response, NextFunction } from 'express'
 import { ApiResponse } from '@/shared/types'
 import { MulterError } from 'multer'
 
+const bodyParserErrorTypes = new Set([
+  'entity.parse.failed', 'entity.verify.failed', 'entity.too.large',
+  'encoding.unsupported', 'charset.unsupported', 'request.aborted',
+  'request.size.invalid', 'stream.encoding.set', 'stream.not.readable',
+  'parameters.too.many', 'querystring.parse.rangeError'
+])
+
 /**
  * 错误类型定义
  */
@@ -86,12 +93,20 @@ export const globalErrorHandler = (
   }
 
   // 记录错误日志
-  console.error(`[${new Date().toISOString()}] ${req.method} ${req.path} - ${statusCode} ${code}:`, {
-    message: error.message,
-    stack: error.stack,
-    userAgent: req.get('User-Agent'),
-    ip: req.ip
-  })
+  const parserErrorType = 'type' in error && typeof error.type === 'string' && bodyParserErrorTypes.has(error.type)
+    ? error.type
+    : error instanceof SyntaxError && 'body' in error ? 'entity.parse.failed' : undefined
+  if (parserErrorType) {
+    // Parser messages and stacks can embed raw request bodies.
+    console.error('Request body parser error:', { type: parserErrorType, status: statusCode })
+  } else {
+    console.error(`[${new Date().toISOString()}] ${req.method} ${req.path} - ${statusCode} ${code}:`, {
+      message: error.message,
+      stack: error.stack,
+      userAgent: req.get('User-Agent'),
+      ip: req.ip
+    })
+  }
 
   // 返回错误响应
   const response: ApiResponse<null> = {
