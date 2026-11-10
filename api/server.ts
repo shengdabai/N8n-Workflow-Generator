@@ -1,5 +1,4 @@
 import express from 'express'
-import cors from 'cors'
 import helmet from 'helmet'
 import morgan from 'morgan'
 import dotenv from 'dotenv'
@@ -16,6 +15,7 @@ import vectorSearchRoutes from './routes/vectorSearch'
 import promptEngineRoutes from './routes/promptEngine'
 import parameterRoutes from './routes/parameters'
 import n8nWorkflowRoutes from './routes/n8nWorkflow'
+import { requestOrigin } from './middleware/requestOrigin'
 
 
 // 错误处理中间件导入
@@ -40,9 +40,10 @@ const HOST = process.env.HOST || '127.0.0.1'
 
 // 中间件配置
 app.use(helmet()) // 安全头部
-app.use(cors()) // 跨域支持
+app.use(requestOrigin())
 app.use(requestLogger) // 自定义请求日志
-app.use(morgan('combined')) // 标准请求日志
+morgan.token('pathname', req => req.url?.split('?')[0] ?? '/')
+app.use(morgan(':method :pathname :status :response-time ms'))
 app.use(express.json({ limit: '10mb' })) // JSON解析
 app.use(express.urlencoded({ extended: true, limit: '10mb' })) // URL编码解析
 

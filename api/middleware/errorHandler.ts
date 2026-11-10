@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { ApiResponse } from '@/shared/types'
+import { MulterError } from 'multer'
 
 /**
  * 错误类型定义
@@ -48,6 +49,11 @@ export const globalErrorHandler = (
     message = error.message
     code = error.code || 'APP_ERROR'
   }
+  else if (error instanceof MulterError) {
+    statusCode = error.code === 'LIMIT_UNEXPECTED_FILE' ? 400 : 413
+    message = '上传请求超出允许的文件或字段限制'
+    code = error.code
+  }
   // 处理验证错误
   else if (error.name === 'ValidationError') {
     statusCode = 400
@@ -83,9 +89,6 @@ export const globalErrorHandler = (
   console.error(`[${new Date().toISOString()}] ${req.method} ${req.path} - ${statusCode} ${code}:`, {
     message: error.message,
     stack: error.stack,
-    body: req.body,
-    query: req.query,
-    params: req.params,
     userAgent: req.get('User-Agent'),
     ip: req.ip
   })
@@ -123,9 +126,6 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction) =
   
   // 记录请求开始
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - 开始处理请求`, {
-    body: req.body,
-    query: req.query,
-    params: req.params,
     userAgent: req.get('User-Agent'),
     ip: req.ip
   })
